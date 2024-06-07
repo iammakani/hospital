@@ -1,5 +1,4 @@
-from base import Base
-from patient import Patient
+from command_handler import CommandHandler
 
 
 class Session:
@@ -9,8 +8,7 @@ class Session:
 
     def __init__(self):
         self.enabled = True
-        self.base = Base()
-        self.patient = Patient(self.base.statuses, self.base.patients)
+        self.command_handler = CommandHandler(self)
 
     def start(self):
         """
@@ -18,56 +16,49 @@ class Session:
         """
 
         while self.enabled:
-            self.read_command(input("Введите команду: "))
+            self.read_command()
 
-    def read_command(self, command):
+    def stop(self):
         """
-        Принимаем команду от пользователя, выполняем соответствующие действия
+        Остановка программы
         """
 
+        print("Сеанс завершён.")
+        self.enabled = False
+
+    def read_command(self):
+        """
+        Принимаем команду от пользователя и передаем в обработчик команд
+        """
+
+        command = (input("Введите команду: "))
         formatted_cmd = command.lower()
-
-        match formatted_cmd:
-            case "узнать статус пациента" | "get status":
-                patient_id = self.read_patient_id()
-                if patient_id:
-                    self.patient.get_status(patient_id)
-
-            case "повысить статус пациента" | "status up":
-                patient_id = self.read_patient_id()
-                if patient_id:
-                    self.patient.status_up(patient_id)
-
-            case "понизить статус пациента" | "status down":
-                patient_id = self.read_patient_id()
-                if patient_id:
-                    self.patient.status_down(patient_id)
-
-            case "выписать пациента" | "discharge":
-                patient_id = self.read_patient_id()
-                if patient_id:
-                    self.patient.discharge(patient_id)
-
-            case "рассчитать статистику" | "calculate statistics":
-                self.base.calculate_statistics()
-
-            case "стоп" | "stop":
-                print("Сеанс завершён.")
-                self.enabled = False
-
-            case _:
-                print("Неизвестная команда! Попробуйте ещё раз")
+        self.command_handler.do_command(formatted_cmd)
 
     def read_patient_id(self):
         """
-        Читаеем ID и проверяем на валидность ID и наличие пациента с таким ID в базе
+        Читаеем ID и проверяем на валидность ID
         ID для работы со списком передается как есть (понижается непосредственно в методах класса Patient)
         """
 
         patient_id = input("Введите ID пациента: ")
         if self.check_is_valid_patient_id(patient_id):
-            if self.base.check_is_patient_in_patients(patient_id):
-                return int(patient_id)
+            return int(patient_id)
+
+    def write(self, text):
+        """
+        Выводим сообщением пользователю
+        """
+
+        print(text)
+
+    def ask_for_discharge(self):
+        """
+        Запрашиваем у пользователя ответ на вопрос о выписке
+        """
+
+        answer = input("Желаете этого клиента выписать? (да/нет): ").lower()
+        return answer
 
     def check_is_valid_patient_id(self, patient_id):
         """

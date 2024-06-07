@@ -21,6 +21,15 @@ class Base:
             print("Ошибка. В больнице нет пациента с таким ID")
         return False
 
+    def get_status_digital(self, patient_id):
+        # if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1]:
+        return int(self.patients[patient_id-1])
+
+    def get_status_human_readable(self, patient_id):
+        status_digital = self.get_status_digital(patient_id)
+        status_human_readable = self.statuses[status_digital]
+        return status_human_readable
+
     def calculate_statistics(self):
         """
         Расчет и вывод статистики
