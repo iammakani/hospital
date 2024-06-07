@@ -22,10 +22,17 @@ class Base:
         return False
 
     def get_status_digital(self, patient_id):
+        """
+        Получаем статус пациента в цифровом виде
+        """
+
         if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
             return int(self.patients[patient_id-1])
 
     def get_status_human_readable(self, patient_id):
+        """
+        Получаем статус пациента в человекочитаемом виде
+        """
         status_digital = self.get_status_digital(patient_id)
         status_human_readable = self.statuses[status_digital]
         return status_human_readable

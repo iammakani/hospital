@@ -13,6 +13,9 @@ class CommandHandler:
         self.session = session
 
     def do_command(self, command):
+        """
+        Выполняем действия в зависимости от принятой команды
+        """
         match command:
             case "узнать статус пациента" | "get status":
                 patient_id = self.session.read_patient_id()
