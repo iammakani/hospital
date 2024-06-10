@@ -16,10 +16,8 @@ class Base:
         """
 
         try:
-            if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
+            if int(patient_id) - 1 < len(self.patients) and self.patients[int(patient_id) - 1] is not None:
                 return True
-            else:
-                print("Ошибка. В больнице нет пациента с таким ID")
             return False
         except Exception as error:
             print(f'Логируем ошибку: {error}')
@@ -30,8 +28,8 @@ class Base:
         """
 
         try:
-            if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
-                return int(self.patients[patient_id-1])
+            if int(patient_id) - 1 < len(self.patients) and self.patients[int(patient_id) - 1] is not None:
+                return int(self.patients[patient_id - 1])
         except Exception as error:
             print(f'Логируем ошибку: {error}')
 
@@ -52,18 +50,10 @@ class Base:
         Расчет и вывод статистики
         """
 
-        total = len(self.patients) - self.patients.count(None)
-        hard_ill = self.patients.count(0)
-        normal_ill = self.patients.count(1)
-        easy_ill = self.patients.count(2)
-        ready_for_discharge = self.patients.count(3)
+        statistics = {'total': len(self.patients) - self.patients.count(None),
+                      'hard_ill': self.patients.count(0),
+                      'normal_ill': self.patients.count(1),
+                      'easy_ill': self.patients.count(2),
+                      'ready_for_discharge': self.patients.count(3)}
 
-        print(f'В больнице на данный момент находится {total} чел., из них:')
-        if hard_ill > 0:
-            print(f'\t- в статусе "Тяжело болен": {hard_ill} чел.')
-        if normal_ill > 0:
-            print(f'\t- в статусе "Болен": {normal_ill} чел.')
-        if easy_ill > 0:
-            print(f'\t- в статусе "Слегка болен": {easy_ill} чел.')
-        if ready_for_discharge > 0:
-            print(f'\t- в статусе "Готов для выписки": {ready_for_discharge} чел.')
+        return statistics

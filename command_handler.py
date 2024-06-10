@@ -23,6 +23,8 @@ class CommandHandler:
                     if self.base.check_is_patient_in_patients(patient_id):
                         patient_status = self.base.get_status_human_readable(patient_id)
                         self.session.write(f'Статус пациента: "{patient_status}"')
+                    else:
+                        self.session.write("Ошибка. В больнице нет пациента с таким ID")
 
             case "повысить статус пациента" | "status up":
                 patient_id = self.session.read_patient_id()
@@ -59,7 +61,16 @@ class CommandHandler:
                             self.session.write('Пациент выписан из больницы')
 
             case "рассчитать статистику" | "calculate statistics":
-                self.base.calculate_statistics()
+                statistics = self.base.calculate_statistics()
+                self.session.write(f"В больнице на данный момент находится {statistics['total']} чел., из них:")
+                if statistics['hard_ill'] > 0:
+                    self.session.write(f"\t- в статусе \"Тяжело болен\": {statistics['hard_ill']} чел.")
+                if statistics['normal_ill'] > 0:
+                    self.session.write(f"\t- в статусе \"Болен\": {statistics['normal_ill']} чел.")
+                if statistics['easy_ill'] > 0:
+                    self.session.write(f"\t- в статусе \"Слегка болен\": {statistics['easy_ill']} чел.")
+                if statistics['ready_for_discharge'] > 0:
+                    self.session.write(f"\t- в статусе \"Готов для выписки\": {statistics['ready_for_discharge']} чел.")
 
             case "стоп" | "stop":
                 self.session.stop()
