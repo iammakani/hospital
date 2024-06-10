@@ -1,75 +1,58 @@
+from communicator import Communicator
 from command_handler import CommandHandler
 
 
 class Session:
     """
-    Класс, описывающий сессию взаимодействия с пользователем
+    Класс, управляет сессией и реагирует на команды
     """
 
     def __init__(self):
-        self.enabled = True
-        self.command_handler = CommandHandler(self)
+        self.__enabled = True
+        self.__communicator = Communicator()
+        self.__command_handler = CommandHandler()
 
     def start(self):
         """
         Запуск программы - основной цикл программы
         """
 
-        while self.enabled:
-            self.read_command()
+        while self.__enabled:
+            self.__work()
 
-    def stop(self):
+    def __stop(self):
         """
         Остановка программы
         """
 
-        print("Сеанс завершён.")
-        self.enabled = False
+        self.__communicator.send_message("Сеанс завершён.")
+        self.__enabled = False
 
-    def read_command(self):
+    def __work(self):
         """
-        Принимаем команду от пользователя и передаем в обработчик команд
-        """
-
-        command = (input("Введите команду: "))
-        formatted_cmd = command.lower()
-        self.command_handler.do_command(formatted_cmd)
-
-    def read_patient_id(self):
-        """
-        Читаеем ID и проверяем на валидность ID
-        ID для работы со списком передается как есть (понижается непосредственно в методах класса Patient)
+        Первичная обработка команд, полученных от пользователя
         """
 
-        patient_id = input("Введите ID пациента: ")
-        if self.check_is_valid_patient_id(patient_id):
-            return int(patient_id)
+        command = self.__communicator.read_command()
+        match command:
+            case "узнать статус пациента" | "get status":
+                self.__command_handler.get_status()
 
-    def write(self, text):
-        """
-        Выводим сообщением пользователю
-        """
+            case "повысить статус пациента" | "status up":
+                self.__command_handler.status_up()
 
-        print(text)
+            case "понизить статус пациента" | "status down":
+                self.__command_handler.status_down()
 
-    def ask_for_discharge(self):
-        """
-        Запрашиваем у пользователя ответ на вопрос о выписке
-        """
+            case "выписать пациента" | "discharge":
+                self.__command_handler.discharge()
 
-        answer = input("Желаете этого клиента выписать? (да/нет): ").lower()
-        return answer
+            case "рассчитать статистику" | "calculate statistics":
+                self.__command_handler.calculate_statistics()
 
-    def check_is_valid_patient_id(self, patient_id):
-        """
-        Проверка: ID пациента должно быть целове положительное число
-        """
+            case "стоп" | "stop":
+                self.__communicator.send_message("Сеанс завершён.")
+                self.__enabled = False
 
-        try:
-            if int(patient_id) > 0:
-                return True
-            else:
-                print("Ошибка. ID пациента должно быть числом (целым, положительным)")
-        except ValueError:
-            print("Ошибка. ID пациента должно быть числом (целым, положительным)")
-        return False
+            case _:
+                self.__communicator.send_message("Неизвестная команда! Попробуйте ещё раз")
