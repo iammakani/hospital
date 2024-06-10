@@ -12,24 +12,30 @@ class Hospital:
         Повысить статус пациента
         """
 
-        status_digital = self.patients[patient_id-1]
-        if status_digital < 3:
-            self.patients[patient_id-1] += 1
-            return True
-        else:
-            return False
+        try:
+            status_digital = self.patients[patient_id-1]
+            if status_digital < 3:
+                self.patients[patient_id-1] += 1
+                return True
+            else:
+                return False
+        except Exception as error:
+            print(f'Логируем ошибку: {error}')
 
     def status_down(self, patient_id):
         """
         Понизить статус пациента
         """
 
-        status_digital = self.patients[patient_id-1]
-        if status_digital > 0:
-            self.patients[patient_id-1] -= 1
-            return True
-        else:
-            return False
+        try:
+            status_digital = self.patients[patient_id-1]
+            if status_digital > 0:
+                self.patients[patient_id-1] -= 1
+                return True
+            else:
+                return False
+        except Exception as error:
+            print(f'Логируем ошибку: {error}')
 
     def discharge(self, patient_id):
         """
@@ -37,5 +43,8 @@ class Hospital:
         ID удаленного пациента в базе становится равно None
         """
 
-        self.patients[patient_id-1] = None
-        return True
+        try:
+            self.patients[patient_id-1] = None
+            return True
+        except Exception as error:
+            print(f'Логируем ошибку: {error}')

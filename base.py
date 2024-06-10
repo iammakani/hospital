@@ -15,27 +15,37 @@ class Base:
         Проверка: пациент с введенным ID существует в базе
         """
 
-        if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
-            return True
-        else:
-            print("Ошибка. В больнице нет пациента с таким ID")
-        return False
+        try:
+            if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
+                return True
+            else:
+                print("Ошибка. В больнице нет пациента с таким ID")
+            return False
+        except Exception as error:
+            print(f'Логируем ошибку: {error}')
 
     def get_status_digital(self, patient_id):
         """
         Получаем статус пациента в цифровом виде
         """
 
-        if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
-            return int(self.patients[patient_id-1])
+        try:
+            if int(patient_id)-1 < len(self.patients) and self.patients[int(patient_id)-1] is not None:
+                return int(self.patients[patient_id-1])
+        except Exception as error:
+            print(f'Логируем ошибку: {error}')
 
     def get_status_human_readable(self, patient_id):
         """
         Получаем статус пациента в человекочитаемом виде
         """
-        status_digital = self.get_status_digital(patient_id)
-        status_human_readable = self.statuses[status_digital]
-        return status_human_readable
+
+        try:
+            status_digital = self.get_status_digital(patient_id)
+            status_human_readable = self.statuses[status_digital]
+            return status_human_readable
+        except Exception as error:
+            print(f'Логируем ошибку: {error}')
 
     def calculate_statistics(self):
         """
