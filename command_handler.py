@@ -41,6 +41,8 @@ class CommandHandler:
                             else:
                                 status_human_readable = self.base.get_status_human_readable(patient_id)
                                 self.session.write(f'Пациент остался в статусе "{status_human_readable}"')
+                    else:
+                        self.session.write("Ошибка. В больнице нет пациента с таким ID")
 
             case "понизить статус пациента" | "status down":
                 patient_id = self.session.read_patient_id()
@@ -52,6 +54,8 @@ class CommandHandler:
                             self.session.write(f'Новый статус пациента: "{new_status_human_readable}"')
                         else:
                             self.session.write('Ошибка. Нельзя понизить самый низкий статус (наши пациенты не умирают)')
+                    else:
+                        self.session.write("Ошибка. В больнице нет пациента с таким ID")
 
             case "выписать пациента" | "discharge":
                 patient_id = self.session.read_patient_id()
@@ -59,6 +63,8 @@ class CommandHandler:
                     if self.base.check_is_patient_in_patients(patient_id):
                         if self.hospital.discharge(patient_id):
                             self.session.write('Пациент выписан из больницы')
+                    else:
+                        self.session.write("Ошибка. В больнице нет пациента с таким ID")
 
             case "рассчитать статистику" | "calculate statistics":
                 statistics = self.base.calculate_statistics()

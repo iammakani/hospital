@@ -13,9 +13,9 @@ class Hospital:
         """
 
         try:
-            status_digital = self.patients[patient_id-1]
+            status_digital = self.patients[patient_id - 1]
             if status_digital < 3:
-                self.patients[patient_id-1] += 1
+                self.patients[patient_id - 1] += 1
                 return True
             else:
                 return False
@@ -28,9 +28,9 @@ class Hospital:
         """
 
         try:
-            status_digital = self.patients[patient_id-1]
+            status_digital = self.patients[patient_id - 1]
             if status_digital > 0:
-                self.patients[patient_id-1] -= 1
+                self.patients[patient_id - 1] -= 1
                 return True
             else:
                 return False
@@ -44,7 +44,10 @@ class Hospital:
         """
 
         try:
-            self.patients[patient_id-1] = None
-            return True
+            if not self.patients[patient_id - 1]:
+                return False
+            else:
+                self.patients[patient_id - 1] = None
+                return True
         except Exception as error:
             print(f'Логируем ошибку: {error}')
