@@ -4,11 +4,11 @@ class Hospital:
     """
 
     def __init__(self):
-        self.__patients = [1 for _ in range(0, 200)]
-        self.__statuses = {0: "Тяжело болен",
-                           1: "Болен",
-                           2: "Слегка болен",
-                           3: "Готов к выписке"}
+        self._patients = [1 for _ in range(0, 200)]
+        self._statuses = {0: "Тяжело болен",
+                          1: "Болен",
+                          2: "Слегка болен",
+                          3: "Готов к выписке"}
 
     def status_up(self, patient_id):
         """
@@ -16,9 +16,9 @@ class Hospital:
         """
 
         try:
-            status_digital = self.__patients[patient_id - 1]
+            status_digital = self._patients[patient_id - 1]
             if status_digital < 3:
-                self.__patients[patient_id - 1] += 1
+                self._patients[patient_id - 1] += 1
                 return True
             else:
                 return False
@@ -31,9 +31,9 @@ class Hospital:
         """
 
         try:
-            status_digital = self.__patients[patient_id - 1]
+            status_digital = self._patients[patient_id - 1]
             if status_digital > 0:
-                self.__patients[patient_id - 1] -= 1
+                self._patients[patient_id - 1] -= 1
                 return True
             else:
                 return False
@@ -47,10 +47,10 @@ class Hospital:
         """
 
         try:
-            if not self.__patients[patient_id - 1]:
+            if not self._patients[patient_id - 1]:
                 return False
             else:
-                self.__patients[patient_id - 1] = None
+                self._patients[patient_id - 1] = None
                 return True
         except Exception as error:
             print(f'Логируем ошибку: {error}')
@@ -61,9 +61,9 @@ class Hospital:
         """
 
         try:
-            if int(patient_id) - 1 < len(self.__patients) and self.__patients[int(patient_id) - 1] is not None:
-                status_digital = int(self.__patients[patient_id - 1])
-                status = self.__statuses[status_digital]
+            if int(patient_id) - 1 < len(self._patients) and self._patients[int(patient_id) - 1] is not None:
+                status_digital = int(self._patients[patient_id - 1])
+                status = self._statuses[status_digital]
                 return status
         except Exception as error:
             print(f'Логируем ошибку: {error}')
@@ -73,11 +73,11 @@ class Hospital:
         Расчет и вывод статистики
         """
 
-        statistics = {'total': len(self.__patients) - self.__patients.count(None),
-                      'hard_ill': self.__patients.count(0),
-                      'normal_ill': self.__patients.count(1),
-                      'easy_ill': self.__patients.count(2),
-                      'ready_for_discharge': self.__patients.count(3)}
+        statistics = {'total': len(self._patients) - self._patients.count(None),
+                      'hard_ill': self._patients.count(0),
+                      'normal_ill': self._patients.count(1),
+                      'easy_ill': self._patients.count(2),
+                      'ready_for_discharge': self._patients.count(3)}
 
         return statistics
 
@@ -87,7 +87,7 @@ class Hospital:
         """
 
         try:
-            if int(patient_id) - 1 < len(self.__patients) and self.__patients[int(patient_id) - 1] is not None:
+            if int(patient_id) - 1 < len(self._patients) and self._patients[int(patient_id) - 1] is not None:
                 return True
             return False
         except Exception as error:

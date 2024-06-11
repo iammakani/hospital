@@ -18,7 +18,7 @@ class Communicator:
         """
 
         patient_id = input("Введите ID пациента: ")
-        if self.__check_is_valid_patient_id(patient_id):
+        if self._check_is_valid_patient_id(patient_id):
             return int(patient_id)
         else:
             print("Ошибка. ID пациента должно быть числом (целым, положительным)")
@@ -40,7 +40,7 @@ class Communicator:
 
         print(message)
 
-    def __check_is_valid_patient_id(self, patient_id):
+    def _check_is_valid_patient_id(self, patient_id):
         """
         Проверка: ID пациента должно быть целове положительное число
         """

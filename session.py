@@ -8,52 +8,52 @@ class Session:
     """
 
     def __init__(self):
-        self.__enabled = True
-        self.__communicator = Communicator()
-        self.__command_handler = CommandHandler()
-        self.__start()
+        self._enabled = True
+        self._communicator = Communicator()
+        self._command_handler = CommandHandler()
+        self._start()
 
-    def __start(self):
+    def _start(self):
         """
         Запуск программы - основной цикл программы
         """
 
-        while self.__enabled:
-            self.__work()
+        while self._enabled:
+            self._work()
 
-    def __stop(self):
+    def _stop(self):
         """
         Остановка программы
         """
 
-        self.__communicator.send_message("Сеанс завершён.")
-        self.__enabled = False
+        self._communicator.send_message("Сеанс завершён.")
+        self._enabled = False
 
-    def __work(self):
+    def _work(self):
         """
         Первичная обработка команд, полученных от пользователя
         """
 
-        command = self.__communicator.read_command()
+        command = self._communicator.read_command()
         match command:
             case "узнать статус пациента" | "get status":
-                self.__command_handler.get_status()
+                self._command_handler.get_status()
 
             case "повысить статус пациента" | "status up":
-                self.__command_handler.status_up()
+                self._command_handler.status_up()
 
             case "понизить статус пациента" | "status down":
-                self.__command_handler.status_down()
+                self._command_handler.status_down()
 
             case "выписать пациента" | "discharge":
-                self.__command_handler.discharge()
+                self._command_handler.discharge()
 
             case "рассчитать статистику" | "calculate statistics":
-                self.__command_handler.calculate_statistics()
+                self._command_handler.calculate_statistics()
 
             case "стоп" | "stop":
-                self.__communicator.send_message("Сеанс завершён.")
-                self.__enabled = False
+                self._communicator.send_message("Сеанс завершён.")
+                self._enabled = False
 
             case _:
-                self.__communicator.send_message("Неизвестная команда! Попробуйте ещё раз")
+                self._communicator.send_message("Неизвестная команда! Попробуйте ещё раз")
