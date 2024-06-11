@@ -58,7 +58,7 @@ class CommandHandler:
                 patient_current_status = self.__hospital.get_status(patient_id)
                 if patient_current_status == 'Тяжело болен':
                     self.__communicator.send_message('Ошибка. Нельзя понизить самый низкий статус (наши пациенты не '
-                                                   'умирают)')
+                                                     'умирают)')
                 else:
                     if self.__hospital.status_down(patient_id):
                         new_patient_status = self.__hospital.get_status(patient_id)
@@ -94,4 +94,4 @@ class CommandHandler:
             self.__communicator.send_message(f"\t- в статусе \"Слегка болен\": {statistics['easy_ill']} чел.")
         if statistics['ready_for_discharge'] > 0:
             self.__communicator.send_message(f"\t- в статусе \"Готов для выписки\": {statistics['ready_for_discharge']}"
-                                           f" чел.")
+                                             f" чел.")
