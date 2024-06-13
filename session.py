@@ -40,7 +40,7 @@ class Session:
                 self._command_handler.discharge()
 
             case "рассчитать статистику" | "calculate statistics":
-                self._command_handler.calculate_statistics()
+                self._command_handler.get_statistics()
 
             case "стоп" | "stop":
                 self._communicator.send_message("Сеанс завершён.")

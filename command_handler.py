@@ -83,7 +83,7 @@ class CommandHandler:
         except IndexError:
             self._communicator.send_message("Ошибка. В больнице нет пациента с таким ID.")
 
-    def calculate_statistics(self):
+    def get_statistics(self):
         """
         Сценарий расчета статистики
         """
