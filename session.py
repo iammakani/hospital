@@ -11,9 +11,8 @@ class Session:
         self._enabled = True
         self._communicator = Communicator()
         self._command_handler = CommandHandler()
-        self._start()
 
-    def _start(self):
+    def start(self):
         """
         Запуск программы - основной цикл программы
         """
