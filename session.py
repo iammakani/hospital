@@ -20,20 +20,12 @@ class Session:
         while self._enabled:
             self._work()
 
-    def _stop(self):
-        """
-        Остановка программы
-        """
-
-        self._communicator.send_message("Сеанс завершён.")
-        self._enabled = False
-
     def _work(self):
         """
         Первичная обработка команд, полученных от пользователя
         """
 
-        command = self._communicator.read_command()
+        command = self._communicator.get_command()
         match command:
             case "узнать статус пациента" | "get status":
                 self._command_handler.get_status()
