@@ -3,9 +3,6 @@ from command_handler import CommandHandler
 
 
 class Session:
-    """
-    Класс, управляет сессией и реагирует на команды
-    """
 
     def __init__(self):
         self._enabled = True
@@ -13,17 +10,11 @@ class Session:
         self._command_handler = CommandHandler()
 
     def start(self):
-        """
-        Запуск программы - основной цикл программы
-        """
 
         while self._enabled:
             self._work()
 
     def _work(self):
-        """
-        Первичная обработка команд, полученных от пользователя
-        """
 
         command = self._communicator.get_command()
         match command:

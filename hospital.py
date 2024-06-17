@@ -1,6 +1,9 @@
+from errors import PatientNotExists, PatientMaxStatusError, PatientMinStatusError
+
+
 class Hospital:
     """
-    Класс, определяющий действия для работы с пациентами (без привязки к конкретному пациенту)
+    Сущность, определяющие критические бизнесс правила
     """
 
     def __init__(self):
@@ -10,73 +13,44 @@ class Hospital:
                           2: "Слегка болен",
                           3: "Готов к выписке"}
 
-    def status_up(self, patient_id):
-        """
-        Повысить статус пациента
-        """
+    def status_up(self, patient_id: int):
 
-        if not type(patient_id) is int:
-            raise TypeError(f'Ошибка. ID пациента должно быть числом (целым, положительным).')
+        self._verify_patient_exists(patient_id)
 
-        if self._is_patient_exist(patient_id):
-            status_digital = self._patients[patient_id - 1]
-            if status_digital < 3:
-                self._patients[patient_id - 1] += 1
-            else:
-                raise ValueError("Ошибка. У пациента уже максимально возможный статус.")
+        status_digital = self._patients[patient_id - 1]
+        if status_digital < 3:
+            self._patients[patient_id - 1] += 1
         else:
-            raise IndexError("Ошибка. В больнице нет пациента с таким ID.")
+            raise PatientMaxStatusError
 
-    def status_down(self, patient_id):
-        """
-        Понизить статус пациента
-        """
+    def status_down(self, patient_id: int):
 
-        if not type(patient_id) is int:
-            raise TypeError(f'Ошибка. ID пациента должно быть числом (целым, положительным).')
+        self._verify_patient_exists(patient_id)
 
-        if self._is_patient_exist(patient_id):
-            status_digital = self._patients[patient_id - 1]
-            if status_digital > 0:
-                self._patients[patient_id - 1] -= 1
-            else:
-                raise ValueError("Ошибка. У пациента уже минимально возможный статус")
+        status_digital = self._patients[patient_id - 1]
+        if status_digital > 0:
+            self._patients[patient_id - 1] -= 1
         else:
-            raise IndexError("Ошибка. В больнице нет пациента с таким ID.")
+            raise PatientMinStatusError
 
-    def discharge(self, patient_id):
+    def discharge(self, patient_id: int):
         """
-        Пациент удаляется из базы
-        ID удаленного пациента в базе становится равно None
-        """
-
-        if not type(patient_id) is int:
-            raise TypeError(f'Ошибка. ID пациента должно быть числом (целым, положительным).')
-
-        if self._is_patient_exist(patient_id):
-            self._patients[patient_id - 1] = None
-        else:
-            raise IndexError("Ошибка. В больнице нет пациента с таким ID.")
-
-    def get_status(self, patient_id):
-        """
-        Получаем статус пациента в цифровом виде
+        Пациент удаляется из базы - фактически ID удаленного пациента в базе становится равно None
         """
 
-        if not type(patient_id) is int:
-            raise TypeError("Ошибка. ID пациента должно быть числом (целым, положительным).")
+        self._verify_patient_exists(patient_id)
 
-        if self._is_patient_exist(patient_id):
-            status_digital = int(self._patients[patient_id - 1])
-            status = self._statuses[status_digital]
-            return status
-        else:
-            raise IndexError("Ошибка. В больнице нет пациента с таким ID.")
+        self._patients[patient_id - 1] = None
+
+    def get_status(self, patient_id: int):
+
+        self._verify_patient_exists(patient_id)
+
+        status_digital = int(self._patients[patient_id - 1])
+        status = self._statuses[status_digital]
+        return status
 
     def get_statistics(self):
-        """
-        Расчет и вывод статистики
-        """
 
         statistics = {'total': len(self._patients) - self._patients.count(None),
                       'hard_ill': self._patients.count(0),
@@ -86,11 +60,27 @@ class Hospital:
 
         return statistics
 
-    def _is_patient_exist(self, patient_id):
-        """
-        Проверка: пациент с введенным ID существует в базе
-        """
+    def _verify_patient_exists(self, patient_id: int):
 
-        if int(patient_id) - 1 < len(self._patients) and self._patients[int(patient_id) - 1] is not None:
+        if not (int(patient_id) - 1 < len(self._patients) and self._patients[int(patient_id) - 1] is not None):
+            raise PatientNotExists
+
+    def can_status_up(self, patient_id: int):
+
+        self._verify_patient_exists(patient_id)
+
+        status_digital = self._patients[patient_id - 1]
+        if status_digital < 3:
             return True
         return False
+
+    def can_status_down(self, patient_id: int):
+
+        self._verify_patient_exists(patient_id)
+
+        status_digital = self._patients[patient_id - 1]
+        if status_digital > 0:
+            return True
+        return False
+
+
