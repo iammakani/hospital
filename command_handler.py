@@ -10,18 +10,14 @@ class CommandHandler:
         self._communicator = Communicator()
 
     def get_status(self):
-
         try:
             patient_id = self._communicator.get_patient_id()
             patient_status = self._hospital.get_status(patient_id)
             self._communicator.send_message(f'Статус пациента: "{patient_status}"')
-        except IdValueError:
-            self._communicator.send_message("Ошибка. ID пациента должно быть числом (целым, положительным)")
-        except PatientNotExists:
-            self._communicator.send_message("Ошибка. В больнице нет пациента с таким ID.")
+        except (IdValueError, PatientNotExists) as error:
+            self._communicator.send_message(str(error))
 
     def status_up(self):
-
         try:
             patient_id = self._communicator.get_patient_id()
             if self._hospital.can_status_up(patient_id):
@@ -35,13 +31,10 @@ class CommandHandler:
                 else:
                     patient_current_status = self._hospital.get_status(patient_id)
                     self._communicator.send_message(f'Пациент остался в статусе "{patient_current_status}"')
-        except IdValueError:
-            self._communicator.send_message("Ошибка. ID пациента должно быть числом (целым, положительным)")
-        except PatientNotExists:
-            self._communicator.send_message("Ошибка. В больнице нет пациента с таким ID.")
+        except (IdValueError, PatientNotExists) as error:
+            self._communicator.send_message(str(error))
 
     def status_down(self):
-
         try:
             patient_id = self._communicator.get_patient_id()
             if self._hospital.can_status_down(patient_id):
@@ -51,24 +44,18 @@ class CommandHandler:
             else:
                 self._communicator.send_message('Ошибка. Нельзя понизить самый низкий статус (наши пациенты не '
                                                 'умирают)')
-        except IdValueError:
-            self._communicator.send_message("Ошибка. ID пациента должно быть числом (целым, положительным)")
-        except PatientNotExists:
-            self._communicator.send_message("Ошибка. В больнице нет пациента с таким ID.")
+        except (IdValueError, PatientNotExists) as error:
+            self._communicator.send_message(str(error))
 
     def discharge(self):
-
         try:
             patient_id = self._communicator.get_patient_id()
             self._hospital.discharge(patient_id)
             self._communicator.send_message('Пациент выписан из больницы')
-        except IdValueError:
-            self._communicator.send_message("Ошибка. ID пациента должно быть числом (целым, положительным)")
-        except PatientNotExists:
-            self._communicator.send_message("Ошибка. В больнице нет пациента с таким ID.")
+        except (IdValueError, PatientNotExists) as error:
+            self._communicator.send_message(str(error))
 
     def get_statistics(self):
-
         statistics = self._hospital.get_statistics()
         self._communicator.send_message(f"В больнице на данный момент находится {statistics['total']} чел., из них:")
         if statistics['hard_ill'] > 0:

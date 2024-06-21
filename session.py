@@ -10,32 +10,29 @@ class Session:
         self._command_handler = CommandHandler()
 
     def start(self):
+        enabled = True
 
-        while self._enabled:
-            self._work()
+        while enabled:
+            command = self._communicator.get_command()
+            match command:
+                case "узнать статус пациента" | "get status":
+                    self._command_handler.get_status()
 
-    def _work(self):
+                case "повысить статус пациента" | "status up":
+                    self._command_handler.status_up()
 
-        command = self._communicator.get_command()
-        match command:
-            case "узнать статус пациента" | "get status":
-                self._command_handler.get_status()
+                case "понизить статус пациента" | "status down":
+                    self._command_handler.status_down()
 
-            case "повысить статус пациента" | "status up":
-                self._command_handler.status_up()
+                case "выписать пациента" | "discharge":
+                    self._command_handler.discharge()
 
-            case "понизить статус пациента" | "status down":
-                self._command_handler.status_down()
+                case "рассчитать статистику" | "calculate statistics":
+                    self._command_handler.get_statistics()
 
-            case "выписать пациента" | "discharge":
-                self._command_handler.discharge()
+                case "стоп" | "stop":
+                    self._communicator.send_message("Сеанс завершён.")
+                    enabled = False
 
-            case "рассчитать статистику" | "calculate statistics":
-                self._command_handler.get_statistics()
-
-            case "стоп" | "stop":
-                self._communicator.send_message("Сеанс завершён.")
-                self._enabled = False
-
-            case _:
-                self._communicator.send_message("Неизвестная команда! Попробуйте ещё раз")
+                case _:
+                    self._communicator.send_message("Неизвестная команда! Попробуйте ещё раз")
