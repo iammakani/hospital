@@ -6,7 +6,7 @@ from errors import IdValueError, PatientNotExists
 class CommandHandler:
 
     def __init__(self):
-        self._hospital = Hospital()
+        self._hospital = Hospital([1 for _ in range(0, 200)])
         self._communicator = Communicator()
 
     def get_status(self):

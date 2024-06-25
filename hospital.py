@@ -5,8 +5,8 @@ class Hospital:
     """
     Сущность, определяющие критические бизнесс правила
     """
-    def __init__(self):
-        self._patients = [1 for _ in range(0, 200)]
+    def __init__(self, patients):
+        self._patients = patients
         self._statuses = {0: "Тяжело болен",
                           1: "Болен",
                           2: "Слегка болен",
