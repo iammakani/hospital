@@ -1,68 +1,147 @@
 import pytest
 from hospital import Hospital
-from errors import PatientNotExists, PatientMaxStatusError
+from errors import PatientNotExists, PatientMaxStatusError, PatientMinStatusError
 
 
-@pytest.fixture()
-def hospital():
-    return Hospital()
+def test_get_status():
+    hospital = Hospital([0, 1, 0])
+    assert hospital.get_status(2) == 'Болен'
 
 
-@pytest.mark.parametrize("patient_id", ["1", "100", "200"])
-def test_get_status_default(hospital, patient_id):
-    assert hospital.get_status(int(patient_id)) == hospital._statuses[1]
-
-
-def test_get_status_patient_not_exists(hospital):
+def test_get_status_when_patient_not_exists():
+    hospital = Hospital([0, 1])
     with pytest.raises(PatientNotExists):
-        hospital.get_status(201)
+        hospital.get_status(3)
 
 
-def test_get_status_discharged_patient_not_exists(hospital):
+def test_get_status_when_patient_is_discharged():
+    hospital = Hospital([1, None])
     with pytest.raises(PatientNotExists):
-        hospital.discharge(5)
-        hospital.get_status(5)
+        hospital.get_status(2)
 
 
-def test_status_up_one_time(hospital):
+def test_status_up():
+    hospital = Hospital([0, 1])
     hospital.status_up(2)
-    assert hospital.get_status(2) == hospital._statuses[2]
+    assert hospital._patients == [0, 2]
 
 
-def test_status_up_two_times(hospital):
-    hospital.status_up(2)
-    hospital.status_up(2)
-    assert hospital.get_status(2) == hospital._statuses[3]
-
-
-def test_status_up_patient_max_status_error(hospital):
+def test_status_up_when_patient_has_max_status():
+    hospital = Hospital([1, 3])
     with pytest.raises(PatientMaxStatusError):
-        hospital.status_up(100)  # ожидаемое значение статуса = 2
-        hospital.status_up(100)  # ожидаемое значение статуса = 3
-        hospital.status_up(100)  # тут ожидаем исключение "PatientMaxStatusError"
+        hospital.status_up(2)
+    assert hospital._patients == [1, 3]
 
 
-def test_status_up_patient_not_exists(hospital):
+def test_status_up_when_patient_not_exists():
+    hospital = Hospital([0, 1])
     with pytest.raises(PatientNotExists):
-        hospital.status_up(201)
+        hospital.status_up(3)
+    assert hospital._patients == [0, 1]
 
 
-def test_get_statistics_default(hospital):
-    assert hospital.get_statistics() == {'total': 200,
-                                         'hard_ill': 0,
-                                         'normal_ill': 200,
-                                         'easy_ill': 0,
-                                         'ready_for_discharge': 0}
+def test_status_up_when_patient_is_already_discharged():
+    hospital = Hospital([1, None])
+    with pytest.raises(PatientNotExists):
+        hospital.status_up(2)
+    assert hospital._patients == [1, None]
 
 
-def test_get_statistics_after_statuses_changes(hospital):
-    hospital.status_up(10)
-    hospital.status_up(20)
-    hospital.status_up(20)
-    hospital.status_down(30)
-    hospital.discharge(40)
-    assert hospital.get_statistics() == {'total': 199,
+def test_status_down():
+    hospital = Hospital([0, 2])
+    hospital.status_down(2)
+    assert hospital._patients == [0, 1]
+
+
+def test_status_down_when_patient_has_min_status():
+    hospital = Hospital([0, 2])
+    with pytest.raises(PatientMinStatusError):
+        hospital.status_down(1)
+    assert hospital._patients == [0, 2]
+
+
+def test_status_down_when_patient_not_exists():
+    hospital = Hospital([0, 2])
+    with pytest.raises(PatientNotExists):
+        hospital.status_down(3)
+    assert hospital._patients == [0, 2]
+
+
+def test_status_down_when_patient_is_already_discharged():
+    hospital = Hospital([0, None])
+    with pytest.raises(PatientNotExists):
+        hospital.status_down(2)
+    assert hospital._patients == [0, None]
+
+
+def test_discharge():
+    hospital = Hospital([0, 1])
+    hospital.discharge(2)
+    assert hospital._patients == [0, None]
+
+
+def test_discharge_when_patient_not_exists():
+    hospital = Hospital([1, 2])
+    with pytest.raises(PatientNotExists):
+        hospital.discharge(3)
+    assert hospital._patients == [1, 2]
+
+
+def test_discharge_when_patient_is_already_discharged():
+    hospital = Hospital([1, None])
+    with pytest.raises(PatientNotExists):
+        hospital.discharge(2)
+    assert hospital._patients == [1, None]
+
+
+def test_can_status_up():
+    hospital = Hospital([1, 2])
+    assert hospital.can_status_up(2)
+
+
+def test_can_status_up_when_patient_has_max_status():
+    hospital = Hospital([2, 3])
+    assert not hospital.can_status_up(2)
+
+
+def test_can_status_up_when_patient_not_exists():
+    hospital = Hospital([1, 2])
+    with pytest.raises(PatientNotExists):
+        hospital.can_status_up(3)
+
+
+def test_can_status_up_when_patient_is_already_discharged():
+    hospital = Hospital([1, None])
+    with pytest.raises(PatientNotExists):
+        hospital.can_status_up(2)
+
+
+def test_can_status_down():
+    hospital = Hospital([1, 2])
+    assert hospital.can_status_down(2)
+
+
+def test_can_status_down_when_patient_has_min_status():
+    hospital = Hospital([1, 0])
+    assert not hospital.can_status_down(2)
+
+
+def test_can_status_down_when_patient_not_exists():
+    hospital = Hospital([1, 2])
+    with pytest.raises(PatientNotExists):
+        hospital.can_status_down(3)
+
+
+def test_can_status_down_when_patient_is_already_discharged():
+    hospital = Hospital([1, None])
+    with pytest.raises(PatientNotExists):
+        hospital.can_status_down(2)
+
+
+def test_get_statistics():
+    hospital = Hospital([0, 1, 1, 2, 2, 2, 3, 3, 3, 3])
+    assert hospital.get_statistics() == {'total': 10,
                                          'hard_ill': 1,
-                                         'normal_ill': 196,
-                                         'easy_ill': 1,
-                                         'ready_for_discharge': 1}
+                                         'normal_ill': 2,
+                                         'easy_ill': 3,
+                                         'ready_for_discharge': 4}
