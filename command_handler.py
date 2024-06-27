@@ -4,10 +4,10 @@ from errors import IdValueError, PatientNotExists
 
 
 class CommandHandler:
-    default_hospital = Hospital([1 for _ in range(0, 200)])
-    default_communicator = Communicator()
+    _default_hospital = Hospital([1 for _ in range(0, 200)])
+    _default_communicator = Communicator()
 
-    def __init__(self, hospital=default_hospital, communicator=default_communicator):
+    def __init__(self, hospital=_default_hospital, communicator=_default_communicator):
         self._hospital = hospital
         self._communicator = communicator
 
