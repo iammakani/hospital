@@ -172,10 +172,10 @@ def test_discharge_when_patient_already_discharged():
 
 
 def test_get_statistics():
-    command_handler = CommandHandler(Hospital([3, 1, None, 2, 3, 1, None, 3]), MagicMock())
+    command_handler = CommandHandler(Hospital([1, 0, None, 1, 3, 0, None, 1]), MagicMock())
     command_handler.get_statistics()
     expected_statistics = f'В больнице на данный момент находится 6 чел., из них:' \
-                          f'\n\t- в статусе "Болен": 2 чел.' \
-                          f'\n\t- в статусе "Слегка болен": 1 чел.' \
-                          f'\n\t- в статусе "Готов для выписки": 3 чел.'
+                          f'\n\t- в статусе "Тяжело болен": 2 чел.' \
+                          f'\n\t- в статусе "Болен": 3 чел.' \
+                          f'\n\t- в статусе "Готов для выписки": 1 чел.'
     command_handler._communicator.send_message.assert_called_with(expected_statistics)
