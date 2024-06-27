@@ -139,9 +139,9 @@ def test_can_status_down_when_patient_is_already_discharged():
 
 
 def test_get_statistics():
-    hospital = Hospital([0, 1, 1, 2, 2, 2, 3, 3, 3, 3])
-    assert hospital.get_statistics() == {'total': 10,
-                                         'hard_ill': 1,
+    hospital = Hospital([3, 1, None, 2, 3, 1, None, 3])
+    assert hospital.get_statistics() == {'total': 6,
+                                         'hard_ill': 0,
                                          'normal_ill': 2,
-                                         'easy_ill': 3,
-                                         'ready_for_discharge': 4}
+                                         'easy_ill': 1,
+                                         'ready_for_discharge': 3}
