@@ -59,13 +59,13 @@ class CommandHandler:
 
     def get_statistics(self):
         statistics = self._hospital.get_statistics()
-        self._communicator.send_message(f"В больнице на данный момент находится {statistics['total']} чел., из них:")
+        result = f"В больнице на данный момент находится {statistics['total']} чел., из них:"
         if statistics['hard_ill'] > 0:
-            self._communicator.send_message(f"\t- в статусе \"Тяжело болен\": {statistics['hard_ill']} чел.")
+            result += f"\n\t- в статусе \"Тяжело болен\": {statistics['hard_ill']} чел."
         if statistics['normal_ill'] > 0:
-            self._communicator.send_message(f"\t- в статусе \"Болен\": {statistics['normal_ill']} чел.")
+            result += f"\n\t- в статусе \"Болен\": {statistics['normal_ill']} чел."
         if statistics['easy_ill'] > 0:
-            self._communicator.send_message(f"\t- в статусе \"Слегка болен\": {statistics['easy_ill']} чел.")
+            result += f"\n\t- в статусе \"Слегка болен\": {statistics['easy_ill']} чел."
         if statistics['ready_for_discharge'] > 0:
-            self._communicator.send_message(f"\t- в статусе \"Готов для выписки\": {statistics['ready_for_discharge']}"
-                                            f" чел.")
+            result += f"\n\t- в статусе \"Готов для выписки\": {statistics['ready_for_discharge']} чел."
+        self._communicator.send_message(result)
