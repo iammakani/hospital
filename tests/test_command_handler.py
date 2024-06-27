@@ -177,6 +177,3 @@ def test_get_statistics():
     expected_statistics = f'В больнице на данный момент находится 6 чел., из них:\n\t- в статусе "Болен": 2 чел.' \
                           f'\n\t- в статусе "Слегка болен": 1 чел.\n\t- в статусе "Готов для выписки": 3 чел.'
     command_handler._communicator.send_message.assert_called_with(expected_statistics)
-
-
-
