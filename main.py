@@ -1,4 +1,4 @@
 from session import Session
 
-s = Session()
-s.start()
+session = Session()
+session.start()
