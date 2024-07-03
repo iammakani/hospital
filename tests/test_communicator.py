@@ -76,16 +76,6 @@ def test_get_patient_id_when_value_is_not_valid(mock_input):
     assert mock_input.call_count == 6
 
 
-@patch('sys.stdout', new_callable=StringIO)
-def test_will_patient_discharge_prompt(mock_prompt):
-    communicator = Communicator()
-    with patch('sys.stdin', StringIO('да')):
-
-        communicator.will_patient_discharge()
-
-    assert mock_prompt.getvalue() == 'Желаете этого клиента выписать? (да/нет): '
-
-
 @patch('builtins.input', side_effect=['да', 'Да', 'ДА'])
 def test_will_patient_discharge(mock_input):
     communicator = Communicator()
@@ -94,6 +84,16 @@ def test_will_patient_discharge(mock_input):
     assert communicator.will_patient_discharge() is True
     assert communicator.will_patient_discharge() is True
     assert mock_input.call_count == 3
+
+
+@patch('sys.stdout', new_callable=StringIO)
+def test_will_patient_discharge_prompt(mock_prompt):
+    communicator = Communicator()
+    with patch('sys.stdin', StringIO('да')):
+
+        communicator.will_patient_discharge()
+
+    assert mock_prompt.getvalue() == 'Желаете этого клиента выписать? (да/нет): '
 
 
 @patch('builtins.input', side_effect=['нет', 'no', 'yes', 'Qwe', '123'])
