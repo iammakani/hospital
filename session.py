@@ -5,7 +5,6 @@ from command_handler import CommandHandler
 class Session:
 
     def __init__(self):
-        self._enabled = True
         self._communicator = Communicator()
         self._command_handler = CommandHandler()
 
