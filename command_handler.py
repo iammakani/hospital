@@ -67,5 +67,5 @@ class CommandHandler:
         if statistics['easy_ill'] > 0:
             result += f"\n\t- в статусе \"Слегка болен\": {statistics['easy_ill']} чел."
         if statistics['ready_for_discharge'] > 0:
-            result += f"\n\t- в статусе \"Готов для выписки\": {statistics['ready_for_discharge']} чел."
+            result += f"\n\t- в статусе \"Готов к выписке\": {statistics['ready_for_discharge']} чел."
         self._communicator.send_message(result)
