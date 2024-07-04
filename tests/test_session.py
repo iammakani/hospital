@@ -3,6 +3,10 @@ from session import Session
 from unittest.mock import patch
 
 
+# session отвечает за старт сессии и интерактивное распределение команд пользователя между другими конкретными
+# методами модулей, поэтому предполагаю, что тут нужна проверка этого правильного распределения
+# так же где это возможно осуществить проверку данных с которыми вызваны другие модули (communicator)
+
 @patch('command_handler.CommandHandler.get_status')
 @patch('communicator.Communicator.get_command', side_effect=['get status', 'узнать статус пациента'])
 def test_start_when_command_is_get_status(_, mock_get_status):
