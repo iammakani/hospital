@@ -1,82 +1,147 @@
 from session import Session
 
-from unittest.mock import patch
+from unittest.mock import patch, call
 
 
-# session отвечает за старт сессии и интерактивное распределение команд пользователя между другими конкретными
-# методами модулей, поэтому предполагаю, что тут нужна проверка этого правильного распределения
-# так же где это возможно осуществить проверку данных с которыми вызваны другие модули (communicator)
-
-@patch('command_handler.CommandHandler.get_status')
-@patch('communicator.Communicator.get_command', side_effect=['get status', 'узнать статус пациента'])
-def test_start_when_command_is_get_status(_, mock_get_status):
-    session = Session()
-
-    session.start(cycles=2)
-
-    assert mock_get_status.call_count == 2
-
-
-@patch('command_handler.CommandHandler.status_up')
-@patch('communicator.Communicator.get_command', side_effect=['status up', 'повысить статус пациента'])
-def test_start_when_command_is_status_up(_, mock_status_up):
-    session = Session()
-
-    session.start(cycles=2)
-
-    assert mock_status_up.call_count == 2
-
-
-@patch('command_handler.CommandHandler.status_down')
-@patch('communicator.Communicator.get_command', side_effect=['status down', 'понизить статус пациента'])
-def test_start_when_command_is_status_up(_, mock_status_down):
-    session = Session()
-
-    session.start(cycles=2)
-
-    assert mock_status_down.call_count == 2
-
-
-@patch('command_handler.CommandHandler.get_statistics')
-@patch('communicator.Communicator.get_command', side_effect=['calculate statistics', 'рассчитать статистику'])
-def test_start_when_command_is_get_statistics(_, mock_get_statistics):
-    session = Session()
-
-    session.start(cycles=2)
-
-    assert mock_get_statistics.call_count == 2
-
-
-@patch('command_handler.Communicator.send_message')
-@patch('communicator.Communicator.get_command', side_effect=['стоп'])
-def test_start_when_command_is_stop_ru(_, mock_send_message):
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['узнать статус пациента',
+                                      '200',
+                                      'status up',
+                                      '2',
+                                      'status down',
+                                      '3',
+                                      'discharge',
+                                      '4',
+                                      'рассчитать статистику',
+                                      'стоп'])
+def test_application_work_when_basic_scenario(_, mock_print):
     session = Session()
 
     session.start()
 
-    assert mock_send_message.called_once_with('Сеанс завершён.')
+    mock_print.assert_has_calls([call('Статус пациента: "Болен"'),
+                                 call('Новый статус пациента: "Слегка болен"'),
+                                 call('Новый статус пациента: "Тяжело болен"'),
+                                 call('Пациент выписан из больницы'),
+                                 call(f'В больнице на данный момент находится 199 чел., из них:\n'
+                                      f'\t- в статусе "Тяжело болен": 1 чел.\n'
+                                      f'\t- в статусе "Болен": 197 чел.\n'
+                                      f'\t- в статусе "Слегка болен": 1 чел.'),
+                                 call('Сеанс завершён.')])
 
 
-@patch('command_handler.Communicator.send_message')
-@patch('communicator.Communicator.get_command', side_effect=['stop'])
-def test_start_when_command_is_stop_eng(_, mock_send_message):
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['выписать всех пациентов',
+                                      'стоп'])
+def test_application_work_when_unknown_command(_, mock_print):
     session = Session()
 
     session.start()
 
-    assert mock_send_message.called_once_with('Сеанс завершён.')
+    mock_print.assert_has_calls([call('Неизвестная команда! Попробуйте ещё раз'),
+                                 call('Сеанс завершён.')])
 
 
-@patch('command_handler.Communicator.send_message')
-@patch('communicator.Communicator.get_command', side_effect=['Qwe', 'get_status', '123', 'exit'])
-def test_start_when_command_is_not_valid(_, mock_send_message):
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['узнать статус пациента',
+                                      '7',
+                                      'GET STATUS',
+                                      '7',
+                                      'Узнать СТАТУС пациентА',
+                                      '7',
+                                      'стоп'])
+def test_application_work_when_different_types_of_input(_, mock_print):
     session = Session()
 
-    session.start(cycles=4)
+    session.start()
 
-    mock_send_message.assert_called_with('Неизвестная команда! Попробуйте ещё раз')
-    mock_send_message.assert_called_with('Неизвестная команда! Попробуйте ещё раз')
-    mock_send_message.assert_called_with('Неизвестная команда! Попробуйте ещё раз')
-    mock_send_message.assert_called_with('Неизвестная команда! Попробуйте ещё раз')
+    mock_print.assert_has_calls([call('Статус пациента: "Болен"'),
+                                 call('Статус пациента: "Болен"'),
+                                 call('Статус пациента: "Болен"'),
+                                 call('Сеанс завершён.')])
 
-    assert mock_send_message.call_count == 4
+
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['узнать статус пациента',
+                                      'два',
+                                      'повысить статус пациента',
+                                      '-2',
+                                      'понизить статус пациента',
+                                      '201',
+                                      'стоп'])
+def test_application_work_when_invalid_input(_, mock_print):
+    session = Session()
+
+    session.start()
+
+    mock_print.assert_has_calls([call('Ошибка. ID пациента должно быть числом (целым, положительным)'),
+                                 call('Ошибка. ID пациента должно быть числом (целым, положительным)'),
+                                 call('Ошибка. В больнице нет пациента с таким ID.'),
+                                 call('Сеанс завершён.')])
+
+
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['повысить статус пациента',
+                                      '1',
+                                      'повысить статус пациента',
+                                      '1',
+                                      'повысить статус пациента',
+                                      '1',
+                                      'да',
+                                      'рассчитать статистику',
+                                      'стоп'])
+def test_application_work_when_status_up_and_patient_discharged(_, mock_print):
+    session = Session()
+
+    session.start()
+
+    mock_print.assert_has_calls([call('Новый статус пациента: "Слегка болен"'),
+                                 call('Новый статус пациента: "Готов к выписке"'),
+                                 call('Пациент выписан из больницы'),
+                                 call(f'В больнице на данный момент находится 199 чел., из них:\n'
+                                      f'\t- в статусе "Болен": 199 чел.'),
+                                 call('Сеанс завершён.')])
+
+
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['повысить статус пациента',
+                                      '1',
+                                      'повысить статус пациента',
+                                      '1',
+                                      'повысить статус пациента',
+                                      '1',
+                                      'нет',
+                                      'рассчитать статистику',
+                                      'стоп'])
+def test_application_work_when_status_up_and_patient_not_discharged(_, mock_print):
+    session = Session()
+
+    session.start()
+
+    mock_print.assert_has_calls([call('Новый статус пациента: "Слегка болен"'),
+                                 call('Новый статус пациента: "Готов к выписке"'),
+                                 call('Пациент остался в статусе "Готов к выписке"'),
+                                 call(f'В больнице на данный момент находится 200 чел., из них:\n'
+                                      f'\t- в статусе "Болен": 199 чел.\n'
+                                      f'\t- в статусе "Готов к выписке": 1 чел.'),
+                                 call('Сеанс завершён.')])
+
+
+@patch('builtins.print')
+@patch('builtins.input', side_effect=['понизить статус пациента',
+                                      '1',
+                                      'понизить статус пациента',
+                                      '1',
+                                      'рассчитать статистику',
+                                      'стоп'])
+def test_application_work_when_status_down_while_status_already_min(_, mock_print):
+    session = Session()
+
+    session.start()
+
+    mock_print.assert_has_calls([call('Новый статус пациента: "Тяжело болен"'),
+                                 call('Ошибка. Нельзя понизить самый низкий статус (наши пациенты не умирают)'),
+                                 call(f'В больнице на данный момент находится 200 чел., из них:\n'
+                                      f'\t- в статусе "Тяжело болен": 1 чел.\n'
+                                      f'\t- в статусе "Болен": 199 чел.'),
+                                 call('Сеанс завершён.')])
