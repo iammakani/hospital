@@ -9,7 +9,7 @@ class Session:
         self._communicator = Communicator()
         self._command_handler = CommandHandler()
 
-    def start(self, cycles=None):
+    def start(self):
         enabled = True
 
         while enabled:
@@ -36,9 +36,3 @@ class Session:
 
                 case _:
                     self._communicator.send_message("Неизвестная команда! Попробуйте ещё раз")
-
-            if cycles is not None:
-                if cycles <= 1:
-                    enabled = False
-                else:
-                    cycles -= 1
