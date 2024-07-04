@@ -5,6 +5,7 @@ class Hospital:
     """
     Сущность, определяющие критические бизнесс правила
     """
+
     def __init__(self, patients):
         self._patients = patients
         self._statuses = {0: "Тяжело болен",
@@ -51,7 +52,13 @@ class Hospital:
         return statistics
 
     def _verify_patient_exists(self, patient_id: int):
-        if not (int(patient_id) - 1 < len(self._patients) and self._patients[int(patient_id) - 1] is not None):
+        """
+        Первые два условия на то, что patient_id в пределах размера БД
+        Третье условие на то, что patient_id не None (т.е. пациент не выписан)
+        """
+        if not (int(patient_id) - 1 < len(self._patients)
+                and int(patient_id) > 0
+                and self._patients[int(patient_id) - 1] is not None):
             raise PatientNotExists
 
     def can_status_up(self, patient_id: int):
