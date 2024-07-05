@@ -4,12 +4,17 @@ from errors import IdValueError, PatientNotExists
 
 
 class CommandHandler:
-    _default_hospital = Hospital([1 for _ in range(0, 200)])
-    _default_communicator = Communicator()
 
-    def __init__(self, hospital=_default_hospital, communicator=_default_communicator):
-        self._hospital = hospital
-        self._communicator = communicator
+    def __init__(self, hospital=None, communicator=None):
+        if hospital:
+            self._hospital = hospital
+        else:
+            self._hospital = Hospital([1 for _ in range(0, 200)])
+
+        if communicator:
+            self._communicator = communicator
+        else:
+            self._communicator = Communicator()
 
     def get_status(self):
         try:
