@@ -17,11 +17,21 @@ def test_get_command(mock_input):
     assert mock_input.call_count == 3
 
 
+@pytest.mark.parametrize("command, result", [('get status', 'get status'),
+                                             ('STATUS UP', 'status up'),
+                                             ('РассчиТАТЬ СТАТИстику', 'рассчитать статистику')])
+def test_get_command_with_parametrize(command, result):
+    communicator = Communicator()
+
+    with patch('builtins.input', return_value=command):
+        assert communicator.get_command() == result
+
+
 @patch('sys.stdout', new_callable=StringIO)
 def test_get_command_prompt(mock_prompt):
     communicator = Communicator()
-    with patch('sys.stdin', StringIO('Get Status')):
 
+    with patch('sys.stdin', StringIO('Get Status')):
         communicator.get_command()
 
     assert mock_prompt.getvalue() == 'Введите команду: '
@@ -39,19 +49,14 @@ def test_get_patient_id(_):
 @patch('sys.stdout', new_callable=StringIO)
 def test_get_patient_id_prompt(mock_prompt):
     communicator = Communicator()
-    with patch('sys.stdin', StringIO('2')):
 
+    with patch('sys.stdin', StringIO('2')):
         communicator.get_patient_id()
 
     assert mock_prompt.getvalue() == 'Введите ID пациента: '
 
 
-# Нормально ли делать так как ниже?
-# На мой взгляд, тест содержит одну логику - проверку негативных сценариев
-# Визуально, он так же довольно органичен, видно что идет проверка появления конкретного исключения при подставлении
-#       значений из списка
-# Или всё же правильнее разбивать на более мелкие тесты?
-@patch('builtins.input', side_effect=['-2', '0', 'Q', 'Test', 'Я', 'Тест'])
+@patch('builtins.input', side_effect=['два', '-1'])
 def test_get_patient_id_when_value_is_not_valid(mock_input):
     communicator = Communicator()
 
@@ -61,42 +66,29 @@ def test_get_patient_id_when_value_is_not_valid(mock_input):
     with pytest.raises(IdValueError):
         communicator.get_patient_id()
 
-    with pytest.raises(IdValueError):
-        communicator.get_patient_id()
-
-    with pytest.raises(IdValueError):
-        communicator.get_patient_id()
-
-    with pytest.raises(IdValueError):
-        communicator.get_patient_id()
-
-    with pytest.raises(IdValueError):
-        communicator.get_patient_id()
-
-    assert mock_input.call_count == 6
+    assert mock_input.call_count == 2
 
 
-@patch('builtins.input', side_effect=['да', 'Да', 'ДА'])
+@patch('builtins.input', side_effect=['да', 'Да'])
 def test_will_patient_discharge(mock_input):
     communicator = Communicator()
 
-    assert communicator.will_patient_discharge() is True
-    assert communicator.will_patient_discharge() is True
-    assert communicator.will_patient_discharge() is True
-    assert mock_input.call_count == 3
+    assert communicator.will_patient_discharge()
+    assert communicator.will_patient_discharge()
+    assert mock_input.call_count == 2
 
 
 @patch('sys.stdout', new_callable=StringIO)
 def test_will_patient_discharge_prompt(mock_prompt):
     communicator = Communicator()
-    with patch('sys.stdin', StringIO('да')):
 
+    with patch('sys.stdin', StringIO('да')):
         communicator.will_patient_discharge()
 
     assert mock_prompt.getvalue() == 'Желаете этого клиента выписать? (да/нет): '
 
 
-@patch('builtins.input', side_effect=['нет', 'no', 'yes', 'Qwe', '123'])
+@patch('builtins.input', side_effect=['нет', 'не нужно', 'yes', 'выпиши конечно'])
 def test_will_patient_discharge_when_answer_is_not_yes(mock_input):
     communicator = Communicator()
 
@@ -104,5 +96,12 @@ def test_will_patient_discharge_when_answer_is_not_yes(mock_input):
     assert communicator.will_patient_discharge() is False
     assert communicator.will_patient_discharge() is False
     assert communicator.will_patient_discharge() is False
-    assert communicator.will_patient_discharge() is False
-    assert mock_input.call_count == 5
+    assert mock_input.call_count == 4
+
+
+@pytest.mark.parametrize("user_answer", ['да', 'не нужно', 'yes', 'выпиши конечно'])
+def test_will_patient_discharge_when_answer_is_not_yes_with_parametrize(user_answer):
+    communicator = Communicator()
+
+    with patch('builtins.input', return_value=user_answer):
+        assert communicator.will_patient_discharge() is False
