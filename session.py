@@ -4,9 +4,9 @@ from command_handler import CommandHandler
 
 class Session:
 
-    def __init__(self):
-        self._communicator = Communicator()
-        self._command_handler = CommandHandler()
+    def __init__(self, communicator=None, command_handler=None):
+        self._communicator = communicator or Communicator()
+        self._command_handler = command_handler or CommandHandler()
 
     def start(self):
         enabled = True

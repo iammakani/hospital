@@ -99,7 +99,7 @@ def test_will_patient_discharge_when_answer_is_not_yes(mock_input):
     assert mock_input.call_count == 4
 
 
-@pytest.mark.parametrize("user_answer", ['да', 'не нужно', 'yes', 'выпиши конечно'])
+@pytest.mark.parametrize("user_answer", ['нет', 'не нужно', 'yes', 'выпиши конечно'])
 def test_will_patient_discharge_when_answer_is_not_yes_with_parametrize(user_answer):
     communicator = Communicator()
 
