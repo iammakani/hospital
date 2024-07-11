@@ -4,21 +4,14 @@ class MockConsole:
         self._expected_requests_and_responses = []
         self._expected_output_messages = []
 
+    def add_expected_request_and_response(self, request, response):
+        self._expected_requests_and_responses.append((request, response))
+
     def _get_current_request_and_response(self):
         current_request_and_response = self._expected_requests_and_responses.pop(0)
         current_request = current_request_and_response[0]
         current_response = current_request_and_response[1]
         return current_request, current_response
-
-    def _check_current_message_exists_in_expected_messages(self):
-        assert self._expected_output_messages, 'f\nПриложение отправило на вывод больше сообщений, чем ожидалось!'
-
-    def _get_current_message(self):
-        current_message = self._expected_output_messages.pop(0)
-        return current_message
-
-    def add_expected_request_and_response(self, request, response):
-        self._expected_requests_and_responses.append((request, response))
 
     def input(self, request):
         expected_request, expected_response = self._get_current_request_and_response()
@@ -30,6 +23,13 @@ class MockConsole:
 
     def add_expected_output_message(self, message):
         self._expected_output_messages.append(message)
+
+    def _check_current_message_exists_in_expected_messages(self):
+        assert self._expected_output_messages, 'f\nПриложение отправило на вывод больше сообщений, чем ожидалось!'
+
+    def _get_current_message(self):
+        current_message = self._expected_output_messages.pop(0)
+        return current_message
 
     def print(self, message):
         self._check_current_message_exists_in_expected_messages()
